@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>GifAnator</title>
+    <link rel="stylesheet" href="./assets/css/reset.css">
+    <link rel="stylesheet" href="./assets/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+</head>
+
+<body>
+     <div class="main" id="main-area">
+        <div class="container-fluid">
+            <h1>GifAnator!</h1>
+            <div id="buttons-area"></div>
+            <hr>
+            <form id="gif-form">
+                <label for="gif-input">Add a Name</label>
+                <input type="text" id="gif-input">
+                <input id="add-gif" type="submit" value="Add Now!">
+            </form>
+        </div>
+        <div class= "gifs-pad" id="gifs-area">
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script type="text/javascript">
+        var nameList = ["Arnold Schwarzenegger", "Sylvester Stallone", "Dolph Lundgren", "The Rock", "Tom Cruise",
+            "Kurt Russell", "Mel Gibson", "Antonio Banderas"];
+
+        function displayGifs() {
+            $("#gifs-area").empty();
+            var term = $(this).attr("data-name");
+            console.log(term + "clicked");
+
+            var still = true;
+            var queryURL = "https://api.giphy.com/v1/gifs/search?q=" + term +
+                "&api_key=xvroe1wPU7pqkNSAdxyW8k0V49VRys5f&limit=13";
+
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function (response) {
+                var results = response.data;
+                for (var i = 0; i < results.length; i++) {
+                    var gifDiv = $("<div style = 'float:left ; margin: 10px ;'>");
+                    var rating = results[i].rating;
+                    var p = $("<p>").text("Rating: " + rating);
+                    var image = $("<img>");
+
+                    image.attr("src", results[i].images.fixed_height_still.url);
+                    image.attr("data-state", "still");
+                    image.attr("data-animate", results[i].images.fixed_height.url);
+                    image.attr("data-still", results[i].images.fixed_height_still.url);
+                    image.addClass("gif");
+                    gifDiv.prepend(p);
+                    gifDiv.prepend(image);
+                    $("#gifs-area").prepend(gifDiv);
+                }
+            });
+        }
+
+        function renderButtons() {
+
+            $("#buttons-area").empty();
+
+            for (var i = 0; i < nameList.length; i++) {
+                var newButton = $("<button>");
+                newButton.addClass("search");
+                newButton.addClass("btn btn-light");
+                newButton.attr("data-name", nameList[i]);
+                console.log(nameList[i]);
+
+                newButton.text(nameList[i]);
+
+                $("#buttons-area").append(newButton);
+            }
+        }
+
+        $("#add-gif").on("click", function (event) {
+            event.preventDefault();
+            var check = $("#gif-input");
+
+            var gifs = $("#gif-input").val().trim();
+            gifs = gifs.toLowerCase();
+
+            nameList.push(gifs);
+
+            renderButtons();
+        });
+
+        $(document).on("click", ".search", displayGifs);
+        $(document).on("click", ".gif", function () {
+
+            console.log("clicked");
+            var state = $(this).attr("data-state");
+
+            var animate = $(this).attr("data-animate");
+            var still = $(this).attr("data-still");
+
+            if (state === "still") {
+                $(this).attr("src", animate);
+                $(this).attr("data-state", "animate");
+            } else if (state === "animate") {
+                $(this).attr("src", still);
+                $(this).attr("data-state", "still");
+            }
+
+            console.log($(this).attr("src"));
+        });
+
+        renderButtons();
+    </script>
+</body>
+
+</html>

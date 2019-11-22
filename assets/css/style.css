@@ -1,0 +1,16 @@
+
+.container-fluid {
+    font-family: 'Roboto', sans-serif;
+    background-color: rgb(180, 123, 37);
+    text-align-last: center;
+}
+
+
+ button.search.btn.btn-light {
+    margin: 10px;
+ }
+
+ p {
+    font-family: 'Roboto', sans-serif;
+    background-color: rgb(173, 153, 121);
+ }
